@@ -1,0 +1,47 @@
+Open a WSL Terminal on VS code 
+change user to ilyass : su - ilyass
+
+and run the script :  ./fswatch.sh/mnt/c/Users/lenovo/Desktop/Projects/Dart/Learning-Dart/variables_and_data_types/bin/example1.dart
+and change the file name to your corresponding file
+
+
+
+
+Script (fswatchAlter.sh): 
+
+#!/bin/bash
+
+if [ $# -eq 0 ]; then
+    echo "No file specified. Usage: $0 /path/to/file.dart"
+    exit 1
+fi
+
+# Define the file to monitor
+file_to_monitor="$1"
+
+# Command to run when the file is saved
+command_to_run="clear; dart $file_to_monitor"
+
+# Get the initial modification time of the file
+initial_mtime=$(stat -c %Y "$file_to_monitor")
+
+while true; do
+    # Check for changes in the modification time
+    current_mtime=$(stat -c %Y "$file_to_monitor")
+
+    if [ "$current_mtime" -gt "$initial_mtime" ]; then
+        # Run the specified command and capture its output
+        command_output=$(eval "$command_to_run")
+
+        # Output command output in bright yellow
+        echo "$(tput setaf 3)$command_output$(tput sgr0)"
+
+        # Update the initial modification time
+        initial_mtime="$current_mtime"
+    fi
+
+    # Sleep for a short interval before checking again
+    sleep 1
+done
+
+
